@@ -1,5 +1,6 @@
 package com.examen.DSWII_T3_YanezOmar.configuration;
 
+import com.examen.DSWII_T3_YanezOmar.util.JwtRequestFilter;
 import com.examen.DSWII_T3_YanezOmar.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;

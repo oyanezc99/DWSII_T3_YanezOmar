@@ -11,7 +11,7 @@ import java.util.Set;
 public class Usuario {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer idusuario;
+    private Long idusuario;
     @Column(name = "nomusuario")
     private String nomusuario;
     @Column(name = "email")
