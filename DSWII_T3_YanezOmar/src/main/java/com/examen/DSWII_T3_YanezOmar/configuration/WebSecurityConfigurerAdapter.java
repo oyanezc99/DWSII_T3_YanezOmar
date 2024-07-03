@@ -12,7 +12,9 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import io.jsonwebtoken.*;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
 @EnableWebSecurity
@@ -33,6 +35,20 @@ public class WebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/**")
+                        .allowedOrigins("https://www.cibertec.edu.pe")
+                        .allowedMethods("GET", "POST", "PUT", "DELETE")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
+            }
+        };
+    }
+
 
     @Bean
     @Override
@@ -44,13 +60,14 @@ public class WebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/api/authenticate").permitAll() // Endpoint para generar token
+                .antMatchers("/api/filesdoc").hasRole("ADMINISTRADOR") // Endpoint para subir archivos
+                .antMatchers("/api/pubs-dto").hasRole("SUPERVISOR") // Endpoint para obtener datos con DTO
                 .anyRequest().authenticated()
                 .and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
-
-        http.addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class);
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and().cors(); // Habilitar CORS globalmente
     }
+
 
     @Bean
     public JwtUtil jwtUtil() {
